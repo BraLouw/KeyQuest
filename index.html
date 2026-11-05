@@ -1,0 +1,869 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KeyQuest - Typing Practice</title>
+<style>
+:root {
+  --bg:#f3f6fb;
+  --panel:#ffffff;
+  --ink:#24334d;
+  --muted:#8491a5;
+  --blue:#3978e8;
+  --blue2:#eaf1ff;
+  --green:#20b879;
+  --red:#e65b65;
+  --border:#e4eaf3;
+  --shadow:0 5px 22px #263b5910;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:Inter,system-ui,Arial,sans-serif;
+}
+header{
+  height:68px;
+  background:white;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 5%;
+  position:sticky;
+  top:0;
+  z-index:5;
+}
+.logo{font-size:23px;font-weight:900;color:var(--blue)}
+.logo span{color:var(--green)}
+.header-right{display:flex;gap:20px;align-items:center}
+.level-pill{
+  background:var(--blue2);
+  color:var(--blue);
+  padding:8px 14px;
+  border-radius:30px;
+  font-size:13px;
+  font-weight:800;
+}
+main{max-width:1150px;margin:30px auto;padding:0 20px}
+.welcome{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:20px;
+  margin-bottom:25px;
+}
+h1{font-size:30px;margin:0 0 7px}
+.subtitle{color:var(--muted);margin:0}
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:13px;
+  margin-bottom:23px;
+}
+.stat{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:17px 20px;
+  box-shadow:var(--shadow);
+}
+.stat small{color:var(--muted);font-weight:700}
+.stat strong{display:block;font-size:25px;margin-top:5px}
+.layout{
+  display:grid;
+  grid-template-columns:270px 1fr;
+  gap:20px;
+}
+.panel{
+  background:white;
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:20px;
+  box-shadow:var(--shadow);
+}
+.panel h2{font-size:17px;margin:0 0 15px}
+.lesson-list{display:flex;flex-direction:column;gap:8px}
+.lesson{
+  border:1px solid transparent;
+  background:#f7f9fc;
+  padding:12px;
+  border-radius:10px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  text-align:left;
+  color:var(--ink);
+  font:inherit;
+  transition:.15s;
+}
+.lesson:hover{background:var(--blue2)}
+.lesson.active{border-color:var(--blue);background:var(--blue2)}
+.lesson.locked{opacity:.45;cursor:not-allowed}
+.lesson-icon{
+  width:30px;height:30px;
+  display:grid;place-items:center;
+  border-radius:9px;
+  background:white;
+  font-size:15px;
+}
+.lesson-info{flex:1}
+.lesson-info strong{font-size:13px;display:block}
+.lesson-info small{color:var(--muted);font-size:11px}
+.check{color:var(--green);font-weight:900}
+.lesson-area{min-width:0}
+.lesson-heading{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin-bottom:17px;
+}
+.lesson-heading h2{margin:0;font-size:20px}
+.mode-tabs{display:flex;gap:7px}
+.tab{
+  border:0;
+  background:#f0f3f8;
+  color:#6c7a90;
+  border-radius:8px;
+  padding:9px 13px;
+  cursor:pointer;
+  font-weight:800;
+}
+.tab.active{background:var(--blue);color:white}
+.prompt-box{
+  background:#f7f9fc;
+  border:1px solid var(--border);
+  border-radius:13px;
+  padding:24px;
+  min-height:125px;
+  font-size:24px;
+  line-height:1.8;
+  letter-spacing:1px;
+  word-break:break-word;
+}
+.prompt-box .correct{color:var(--green)}
+.prompt-box .wrong{
+  color:var(--red);
+  background:#ffe8e9;
+  border-radius:3px;
+}
+.prompt-box .current{
+  border-bottom:3px solid var(--blue);
+}
+.input-area{
+  width:100%;
+  min-height:95px;
+  resize:vertical;
+  margin-top:14px;
+  border:2px solid var(--border);
+  border-radius:12px;
+  padding:15px;
+  outline:none;
+  font:18px/1.6 inherit;
+  font-family:inherit;
+  color:var(--ink);
+}
+.input-area:focus{border-color:var(--blue)}
+.input-area:disabled{background:#f4f6f9}
+.actions{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-top:14px;
+}
+button.primary{
+  border:0;
+  border-radius:9px;
+  background:var(--blue);
+  color:white;
+  font-weight:800;
+  padding:12px 19px;
+  cursor:pointer;
+}
+button.primary:hover{filter:brightness(.94)}
+button.secondary{
+  border:1px solid var(--border);
+  border-radius:9px;
+  background:white;
+  color:var(--ink);
+  font-weight:800;
+  padding:11px 16px;
+  cursor:pointer;
+}
+button:disabled{opacity:.45;cursor:not-allowed}
+.feedback{font-size:13px;color:var(--muted)}
+.keyboard-panel{margin-top:20px}
+.keyboard{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  margin-top:14px;
+}
+.key-row{display:flex;justify-content:center;gap:5px}
+.key{
+  min-width:34px;
+  height:39px;
+  padding:0 5px;
+  border-radius:6px;
+  background:#f0f3f8;
+  border:1px solid #e0e6ef;
+  display:grid;
+  place-items:center;
+  font-size:12px;
+  font-weight:800;
+  color:#63718a;
+  flex:1;
+  max-width:53px;
+}
+.key.wide{max-width:85px;flex:1.7}
+.key.space{max-width:340px;flex:6}
+.key.active{
+  background:var(--blue);
+  color:white;
+  border-color:var(--blue);
+  transform:translateY(-3px);
+}
+.key.pressed{background:var(--green);color:white}
+.keyboard-note{
+  color:var(--muted);
+  font-size:12px;
+  text-align:center;
+  margin-top:12px;
+}
+.finger-guide{
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:15px;
+}
+.finger{
+  background:#f7f9fc;
+  border:1px solid var(--border);
+  padding:8px 12px;
+  border-radius:9px;
+  font-size:12px;
+  color:var(--muted);
+}
+.finger b{color:var(--ink)}
+.test-settings{
+  display:flex;gap:10px;align-items:center;flex-wrap:wrap;
+}
+select{
+  padding:9px 12px;
+  border:1px solid var(--border);
+  border-radius:8px;
+  background:white;
+  color:var(--ink);
+}
+.test-stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin:15px 0;
+}
+.test-stat{
+  background:#f7f9fc;
+  border-radius:10px;
+  padding:12px;
+  text-align:center;
+}
+.test-stat small{color:var(--muted);font-weight:700}
+.test-stat strong{display:block;font-size:23px;margin-top:4px}
+.hidden{display:none!important}
+footer{text-align:center;padding:28px;color:var(--muted);font-size:12px}
+@media(max-width:760px){
+  .layout{grid-template-columns:1fr}
+  .lesson-list{display:grid;grid-template-columns:repeat(2,1fr)}
+  .welcome{align-items:flex-start;flex-direction:column}
+  .stats{gap:7px}
+  .stat{padding:12px}
+  .stat strong{font-size:20px}
+  .prompt-box{font-size:19px;padding:16px}
+  .key{height:32px;font-size:10px;min-width:0}
+  header{padding:0 15px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Key<span>Quest</span> ⌨️</div>
+  <div class="header-right">
+    <div class="level-pill" id="levelPill">Level 1</div>
+    <strong id="headerStars">⭐ 0</strong>
+  </div>
+</header>
+
+<main>
+  <section class="welcome">
+    <div>
+      <h1>Ready to become a typing pro?</h1>
+      <p class="subtitle">Practice a little every day and watch your skills grow.</p>
+    </div>
+    <div class="level-pill" id="progressLabel">0% completed</div>
+  </section>
+
+  <section class="stats">
+    <div class="stat">
+      <small>BEST WPM</small>
+      <strong id="bestWpm">0</strong>
+    </div>
+    <div class="stat">
+      <small>LESSONS COMPLETED</small>
+      <strong id="completedCount">0</strong>
+    </div>
+    <div class="stat">
+      <small>STARS EARNED</small>
+      <strong id="starCount">0 ⭐</strong>
+    </div>
+  </section>
+
+  <section class="layout">
+    <aside class="panel">
+      <h2>📚 Lessons</h2>
+      <div class="lesson-list" id="lessonList"></div>
+      <hr style="border:0;border-top:1px solid var(--border);margin:20px 0">
+      <button class="secondary" style="width:100%" onclick="resetProgress()">Reset progress</button>
+    </aside>
+
+    <section class="lesson-area">
+      <div class="panel">
+        <div class="lesson-heading">
+          <div>
+            <h2 id="activityTitle">Home row basics</h2>
+            <div class="feedback" id="activityDescription">Learn where your fingers belong.</div>
+          </div>
+          <div class="mode-tabs">
+            <button class="tab active" id="lessonTab" onclick="setMode('lesson')">Lessons</button>
+            <button class="tab" id="testTab" onclick="setMode('test')">Test</button>
+          </div>
+        </div>
+
+        <div id="lessonMode">
+          <div class="prompt-box" id="prompt"></div>
+          <textarea id="typingInput" class="input-area"
+            placeholder="Start typing the text above..."
+            autocomplete="off" autocapitalize="off" spellcheck="false"></textarea>
+          <div class="actions">
+            <span class="feedback" id="lessonFeedback">Type the text to complete this lesson.</span>
+            <button class="primary" id="nextButton" onclick="nextLesson()" disabled>Next lesson →</button>
+          </div>
+        </div>
+
+        <div id="testMode" class="hidden">
+          <div class="test-settings">
+            <label for="duration">Test length:</label>
+            <select id="duration">
+              <option value="15">15 seconds</option>
+              <option value="30">30 seconds</option>
+              <option value="60" selected>60 seconds</option>
+              <option value="120">2 minutes</option>
+            </select>
+            <button class="primary" id="startTest" onclick="startTest()">Start test</button>
+          </div>
+          <div class="test-stats">
+            <div class="test-stat"><small>TIME LEFT</small><strong id="timeLeft">60</strong></div>
+            <div class="test-stat"><small>WPM</small><strong id="testWpm">0</strong></div>
+            <div class="test-stat"><small>ACCURACY</small><strong id="testAccuracy">100%</strong></div>
+          </div>
+          <div class="prompt-box" id="testPrompt"></div>
+          <textarea id="testInput" class="input-area" placeholder="Press Start test first..."
+            disabled autocomplete="off" autocapitalize="off" spellcheck="false"></textarea>
+          <div class="actions">
+            <span class="feedback" id="testFeedback">Choose a time and start typing!</span>
+            <button class="secondary" onclick="resetTest()">Reset test</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel keyboard-panel">
+        <h2>⌨️ Keyboard guide</h2>
+        <div class="keyboard" id="keyboard"></div>
+        <div class="keyboard-note" id="keyboardNote">The next key will light up as you type.</div>
+        <div class="finger-guide">
+          <div class="finger"><b>Left pinky</b> · Q A Z</div>
+          <div class="finger"><b>Left ring</b> · W S X</div>
+          <div class="finger"><b>Left middle</b> · E D C</div>
+          <div class="finger"><b>Left index</b> · R F V T G B</div>
+          <div class="finger"><b>Right index</b> · Y H N U J M</div>
+          <div class="finger"><b>Right middle</b> · I K ,</div>
+          <div class="finger"><b>Right ring</b> · O L .</div>
+          <div class="finger"><b>Right pinky</b> · P ; /</div>
+        </div>
+      </div>
+    </section>
+  </section>
+</main>
+
+<footer>KeyQuest · Keep practising, keep improving!</footer>
+
+<script>
+const lessons = [
+  {
+    title:"Home row: A and S",
+    description:"Start with the home row on your left hand.",
+    text:"aaa sss aaa sss as as sa sa"
+  },
+  {
+    title:"Home row: D and F",
+    description:"Add your middle and index fingers.",
+    text:"ddd fff ddd fff ad fa sad fad"
+  },
+  {
+    title:"Home row: J and K",
+    description:"Now practise the right-hand home row.",
+    text:"jjj kkk jjj kkk jk kj ask dad"
+  },
+  {
+    title:"Home row: L",
+    description:"Reach the final home-row letter.",
+    text:"lll all fall flask salad ask"
+  },
+  {
+    title:"Home row challenge",
+    description:"Put your home-row skills together.",
+    text:"a sad lad asks dad a flask"
+  },
+  {
+    title:"Top row: Q and W",
+    description:"Reach up to the top row.",
+    text:"qqq www q w qw we weq was"
+  },
+  {
+    title:"Top row: E and R",
+    description:"Practise the next two letters.",
+    text:"eee rrr red deer are rare"
+  },
+  {
+    title:"Top row: T and Y",
+    description:"Use both index fingers.",
+    text:"ttt yyy try yet they type"
+  },
+  {
+    title:"Top row challenge",
+    description:"Mix the top row and home row.",
+    text:"the red car was ready to race"
+  },
+  {
+    title:"Bottom row: Z and X",
+    description:"Reach down with your left hand.",
+    text:"zzz xxx z x zx axe six"
+  },
+  {
+    title:"Bottom row: C and V",
+    description:"Practise the lower middle keys.",
+    text:"ccc vvv cave have voice civic"
+  },
+  {
+    title:"Bottom row: B and N",
+    description:"Use your index fingers.",
+    text:"bbb nnn banana bean blue"
+  },
+  {
+    title:"Bottom row challenge",
+    description:"Combine all three letter rows.",
+    text:"brave kids can learn new skills"
+  },
+  {
+    title:"Capital letters",
+    description:"Use Shift to type capital letters.",
+    text:"Hello World Good Morning Amazing"
+  },
+  {
+    title:"Numbers",
+    description:"Practise the number row.",
+    text:"12345 67890 2026 123 456"
+  },
+  {
+    title:"Punctuation",
+    description:"Try commas, full stops and question marks.",
+    text:"Hello, world. How are you? I am great!"
+  },
+  {
+    title:"Final challenge",
+    description:"A longer passage to test your skills.",
+    text:"Practice makes progress. Keep your fingers relaxed, look at the screen, and type each word carefully."
+  }
+];
+
+const state = {
+  completed: JSON.parse(localStorage.getItem("kq_completed") || "[]"),
+  best: Number(localStorage.getItem("kq_best") || 0),
+  stars: Number(localStorage.getItem("kq_stars") || 0),
+  selected: 0,
+  mode: "lesson",
+  lessonDone: false
+};
+
+const $ = id => document.getElementById(id);
+
+function save(){
+  localStorage.setItem("kq_completed", JSON.stringify(state.completed));
+  localStorage.setItem("kq_best", state.best);
+  localStorage.setItem("kq_stars", state.stars);
+}
+
+function currentLevel(){
+  return Math.floor(state.completed.length / 3) + 1;
+}
+
+function updateStats(){
+  $("bestWpm").textContent = state.best;
+  $("completedCount").textContent = state.completed.length;
+  $("starCount").textContent = state.stars + " ⭐";
+  $("headerStars").textContent = "⭐ " + state.stars;
+  $("levelPill").textContent = "Level " + currentLevel();
+  $("progressLabel").textContent =
+    Math.round(state.completed.length / lessons.length * 100) + "% completed";
+}
+
+function isUnlocked(index){
+  return index === 0 || state.completed.includes(index - 1);
+}
+
+function renderLessons(){
+  $("lessonList").innerHTML = "";
+
+  lessons.forEach((lesson, index) => {
+    const done = state.completed.includes(index);
+    const locked = !isUnlocked(index);
+    const button = document.createElement("button");
+
+    button.className = "lesson" +
+      (state.selected === index ? " active" : "") +
+      (locked ? " locked" : "");
+
+    button.innerHTML = `
+      <span class="lesson-icon">${done ? "🏆" : locked ? "🔒" : "⌨️"}</span>
+      <span class="lesson-info">
+        <strong>${index + 1}. ${lesson.title}</strong>
+        <small>${done ? "Completed" : locked ? "Locked" : "Ready to practise"}</small>
+      </span>
+      <span class="check">${done ? "✓" : ""}</span>
+    `;
+
+    button.disabled = locked;
+    button.addEventListener("click", () => selectLesson(index));
+    $("lessonList").appendChild(button);
+  });
+}
+
+function selectLesson(index){
+  if(!isUnlocked(index)) return;
+  state.selected = index;
+  state.lessonDone = false;
+  renderLessons();
+  loadLesson();
+}
+
+function loadLesson(){
+  const lesson = lessons[state.selected];
+  $("activityTitle").textContent = lesson.title;
+  $("activityDescription").textContent = lesson.description;
+  $("typingInput").value = "";
+  $("typingInput").disabled = false;
+  $("typingInput").focus();
+  $("nextButton").disabled = true;
+  $("lessonFeedback").textContent = "Type the text to complete this lesson.";
+  renderPrompt(lesson.text, "", "prompt");
+  updateKeyboard(lesson.text[0]);
+}
+
+function renderPrompt(text, typed, elementId){
+  const container = $(elementId);
+  container.innerHTML = "";
+
+  for(let i = 0; i < text.length; i++){
+    const span = document.createElement("span");
+    const char = text[i];
+
+    if(i < typed.length){
+      span.className = typed[i] === char ? "correct" : "wrong";
+    }else if(i === typed.length){
+      span.className = "current";
+    }
+
+    span.textContent = char;
+    container.appendChild(span);
+  }
+}
+
+function updateKeyboard(nextChar){
+  document.querySelectorAll(".key").forEach(key => {
+    key.classList.toggle(
+      "active",
+      key.dataset.key === (nextChar || "").toLowerCase()
+    );
+  });
+
+  const finger = getFinger(nextChar);
+  $("keyboardNote").textContent = nextChar
+    ? `Next key: ${nextChar === " " ? "SPACE" : nextChar.toUpperCase()} · ${finger}`
+    : "Lesson complete!";
+}
+
+function getFinger(char){
+  const c = (char || "").toLowerCase();
+  if("qaz".includes(c)) return "Left pinky";
+  if("wsx".includes(c)) return "Left ring finger";
+  if("edc".includes(c)) return "Left middle finger";
+  if("rfvtgb".includes(c)) return "Left index finger";
+  if("yhnujm".includes(c)) return "Right index finger";
+  if("ik,".includes(c)) return "Right middle finger";
+  if("ol.".includes(c)) return "Right ring finger";
+  if("p;/".includes(c)) return "Right pinky";
+  if(c === " ") return "Thumb";
+  return "Use the appropriate finger";
+}
+
+function buildKeyboard(){
+  const rows = [
+    ["q","w","e","r","t","y","u","i","o","p"],
+    ["a","s","d","f","g","h","j","k","l"],
+    ["z","x","c","v","b","n","m",",",".","/"]
+  ];
+
+  $("keyboard").innerHTML = "";
+
+  rows.forEach(row => {
+    const rowEl = document.createElement("div");
+    rowEl.className = "key-row";
+
+    row.forEach(letter => {
+      const key = document.createElement("div");
+      key.className = "key";
+      key.dataset.key = letter;
+      key.textContent = letter.toUpperCase();
+      rowEl.appendChild(key);
+    });
+
+    $("keyboard").appendChild(rowEl);
+  });
+
+  const bottom = document.createElement("div");
+  bottom.className = "key-row";
+  const space = document.createElement("div");
+  space.className = "key space";
+  space.dataset.key = " ";
+  space.textContent = "SPACE";
+  bottom.appendChild(space);
+  $("keyboard").appendChild(bottom);
+}
+
+$("typingInput").addEventListener("input", () => {
+  const lesson = lessons[state.selected];
+  const typed = $("typingInput").value;
+
+  renderPrompt(lesson.text, typed, "prompt");
+
+  const correct = [...typed].filter((c,i) => c === lesson.text[i]).length;
+  const accuracy = typed.length
+    ? Math.round(correct / typed.length * 100)
+    : 100;
+
+  $("lessonFeedback").textContent =
+    `${correct} correct characters · ${accuracy}% accuracy`;
+
+  updateKeyboard(lesson.text[typed.length]);
+
+  if(typed === lesson.text){
+    completeLesson();
+  }
+});
+
+function completeLesson(){
+  if(state.lessonDone) return;
+  state.lessonDone = true;
+
+  $("typingInput").disabled = true;
+  $("nextButton").disabled = false;
+  $("lessonFeedback").textContent = "🎉 Excellent! Lesson completed!";
+
+  if(!state.completed.includes(state.selected)){
+    state.completed.push(state.selected);
+    state.stars += 10;
+  }
+
+  save();
+  updateStats();
+  renderLessons();
+}
+
+function nextLesson(){
+  const next = state.selected + 1;
+
+  if(next < lessons.length && isUnlocked(next)){
+    selectLesson(next);
+  }else{
+    $("lessonFeedback").textContent =
+      "🏆 You have completed all available lessons!";
+  }
+}
+
+function setMode(mode){
+  state.mode = mode;
+
+  $("lessonMode").classList.toggle("hidden", mode !== "lesson");
+  $("testMode").classList.toggle("hidden", mode !== "test");
+  $("lessonTab").classList.toggle("active", mode === "lesson");
+  $("testTab").classList.toggle("active", mode === "test");
+
+  if(mode === "test"){
+    $("typingInput").blur();
+    $("activityTitle").textContent = "Typing speed test";
+    $("activityDescription").textContent = "See how fast and accurately you can type.";
+    prepareTest();
+  }else{
+    $("activityTitle").textContent = lessons[state.selected].title;
+    $("activityDescription").textContent = lessons[state.selected].description;
+  }
+}
+
+// Typing test
+const paragraphs = [
+  "The quick brown fox jumps over the lazy dog. Practice typing every day to improve your speed and accuracy.",
+  "Learning a new skill takes patience and practice. Keep your eyes on the screen and let your fingers find the keys.",
+  "Technology helps people connect, learn, create and explore new ideas. Typing is a useful skill for school and everyday life.",
+  "A good typist stays relaxed and focuses on accuracy before speed. With regular practice, every small improvement adds up.",
+  "The world is full of interesting things to discover. Read a little, write a little, and keep challenging yourself."
+];
+
+let test = {
+  active:false,
+  duration:60,
+  remaining:60,
+  startedAt:0,
+  timer:null,
+  text:"",
+  finished:false
+};
+
+function prepareTest(){
+  clearInterval(test.timer);
+  test.active = false;
+  test.finished = false;
+  test.duration = Number($("duration").value);
+  test.remaining = test.duration;
+  test.text = paragraphs[Math.floor(Math.random() * paragraphs.length)];
+
+  $("timeLeft").textContent = test.remaining;
+  $("testWpm").textContent = "0";
+  $("testAccuracy").textContent = "100%";
+  $("testInput").value = "";
+  $("testInput").disabled = true;
+  $("testPrompt").textContent = test.text;
+  $("startTest").disabled = false;
+  $("testFeedback").textContent = "Choose a time and start typing!";
+  updateKeyboard(test.text[0]);
+}
+
+function startTest(){
+  prepareTest();
+  test.duration = Number($("duration").value);
+  test.remaining = test.duration;
+  test.active = true;
+  test.startedAt = Date.now();
+
+  $("timeLeft").textContent = test.remaining;
+  $("testInput").disabled = false;
+  $("testInput").focus();
+  $("startTest").disabled = true;
+  $("testFeedback").textContent = "Go! Type as much as you can.";
+
+  test.timer = setInterval(() => {
+    test.remaining--;
+    $("timeLeft").textContent = test.remaining;
+    updateTestStats();
+
+    if(test.remaining <= 0){
+      finishTest();
+    }
+  }, 1000);
+}
+
+$("testInput").addEventListener("input", () => {
+  if(!test.active) return;
+
+  const typed = $("testInput").value;
+  renderPrompt(test.text, typed, "testPrompt");
+  updateTestStats();
+  updateKeyboard(test.text[typed.length]);
+
+  if(typed.length >= test.text.length){
+    finishTest();
+  }
+});
+
+function updateTestStats(){
+  const typed = $("testInput").value;
+  const elapsed = Math.max(1, (Date.now() - test.startedAt) / 1000);
+  const correct = [...typed].filter((c,i) => c === test.text[i]).length;
+  const accuracy = typed.length
+    ? Math.round(correct / typed.length * 100)
+    : 100;
+
+  const wpm = Math.round((correct / 5) / (elapsed / 60));
+
+  $("testWpm").textContent = wpm;
+  $("testAccuracy").textContent = accuracy + "%";
+}
+
+function finishTest(){
+  if(!test.active) return;
+
+  test.active = false;
+  test.finished = true;
+  clearInterval(test.timer);
+
+  $("testInput").disabled = true;
+  $("startTest").disabled = false;
+
+  const wpm = Number($("testWpm").textContent);
+  if(wpm > state.best){
+    state.best = wpm;
+    save();
+    updateStats();
+  }
+
+  $("testFeedback").textContent =
+    `🏁 Test finished! You typed at ${wpm} WPM with ${$("testAccuracy").textContent} accuracy.`;
+}
+
+function resetTest(){
+  clearInterval(test.timer);
+  prepareTest();
+}
+
+// Prevent accidentally switching away while typing is not necessary.
+// Save progress whenever the page is closed.
+window.addEventListener("beforeunload", save);
+
+function resetProgress(){
+  if(!confirm("Are you sure you want to reset all your KeyQuest progress?")) return;
+
+  state.completed = [];
+  state.best = 0;
+  state.stars = 0;
+  state.selected = 0;
+  state.lessonDone = false;
+
+  save();
+  updateStats();
+  renderLessons();
+  loadLesson();
+}
+
+buildKeyboard();
+updateStats();
+renderLessons();
+loadLesson();
+</script>
+</body>
+</html>
